@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import model.Song;
 
 import java.awt.event.ActionEvent;
+import java.net.InterfaceAddress;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -51,6 +52,59 @@ public class ListController implements Initializable {
     }
 
     public void addSongHandle() {
+
+        name_detail.setText("");
+        artist_detail.setText("");
+        album_detail.setText("");
+        year_detail.setText("");
+
+        name_detail.setPromptText("...Enter Song...");
+        artist_detail.setPromptText("...Enter Artist...");
+        album_detail.setPromptText("...Enter Album...");
+        year_detail.setPromptText("...Enter Year...");
+
+        name_detail.setEditable(true);
+        artist_detail.setEditable(true);
+        album_detail.setEditable(true);
+        year_detail.setEditable(true);
+
+        confirm_button.setDisable(false);
+        cancel_button.setDisable(false);
+
+        confirm_button.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
+            @Override
+            public void handle(javafx.event.ActionEvent event) {
+                String name = name_detail.getText();
+                String artist = artist_detail.getText();
+                String album = album_detail.getText();
+                String year = year_detail.getText();
+                Song s;
+
+                //Constructor with all 4
+                if (!album.equals("") && !year.equals("")) {
+                    s = new Song(name, artist, album, Integer.parseInt(year));
+                    songsList.add(s);
+                }
+                //Song and Artist
+                else if (album.equals("") && year.equals("")) {
+                    s = new Song(name, artist);
+                    songsList.add(s);
+                }
+                //No album
+                else if (album.equals("")) {
+                    s = new Song(name, artist, Integer.parseInt(year));
+                    songsList.add(s);
+                }
+                //No year
+                else if (year.equals("")) {
+                    s = new Song(name, artist, album);
+                    songsList.add(s);
+                }
+                songsObservableList.add(songsList.get(songsList.size() - 1).getName());
+            }
+        });
+
+
         sortSongs();
     }
 
@@ -61,6 +115,7 @@ public class ListController implements Initializable {
         artist_detail.setEditable(true);
         album_detail.setEditable(true);
         year_detail.setEditable(true);
+
         confirm_button.setDisable(false);
         cancel_button.setDisable(false);
 
@@ -90,16 +145,14 @@ public class ListController implements Initializable {
                 name_detail.setText(currentSongSelected.getName());
                 artist_detail.setText(currentSongSelected.getArtist());
 
-                if(currentSongSelected.getAlbum()!=null){
+                if (currentSongSelected.getAlbum() != null) {
                     album_detail.setText(currentSongSelected.getAlbum());
-                }
-                else{
+                } else {
                     album_detail.setText("");
                 }
-                if(currentSongSelected.getYear()!=-1){
+                if (currentSongSelected.getYear() != -1) {
                     year_detail.setText(String.valueOf(currentSongSelected.getYear()));
-                }
-                else {
+                } else {
                     year_detail.setText("");
                 }
 
@@ -114,7 +167,7 @@ public class ListController implements Initializable {
     }
 
     public void sortSongs() {
-        
+
     }
 
     public void showSongDetails() {
@@ -145,14 +198,15 @@ public class ListController implements Initializable {
         }
         return null;
     }
-    public void populateList(){
+
+    public void populateList() {
         songsList.add(new Song("Starboy", "The Weeknd"));
         songsList.add(new Song("Closer", "Chainsmokers", "album_here", 2016));
         for (int i = 0; i < songsList.size(); i++) {
             songsObservableList.add(songsList.get(i).getName());
         }
         songs_listview.setItems(songsObservableList);
-        if(songsList!=null){
+        if (songsList != null) {
             songs_listview.getSelectionModel().selectFirst();
             showSongDetails();
         }
