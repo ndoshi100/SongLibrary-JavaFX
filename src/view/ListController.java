@@ -12,9 +12,12 @@ import javafx.stage.Stage;
 import model.Song;
 
 import java.awt.event.ActionEvent;
+import java.lang.reflect.Array;
 import java.net.InterfaceAddress;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.ResourceBundle;
 
 /**
@@ -101,11 +104,25 @@ public class ListController implements Initializable {
                     songsList.add(s);
                 }
                 songsObservableList.add(songsList.get(songsList.size() - 1).getName());
+
+                //sortSongs()
+
+                songs_listview.getSelectionModel().selectLast();
+
+                name_detail.setEditable(false);
+                artist_detail.setEditable(false);
+                album_detail.setEditable(false);
+                year_detail.setEditable(false);
+
+                name_detail.setPromptText("");
+                artist_detail.setPromptText("");
+                album_detail.setPromptText("");
+                year_detail.setPromptText("");
+
+                cancel_button.setDisable(true);
+                confirm_button.setDisable(true);
             }
         });
-
-
-        sortSongs();
     }
 
     public void editSongHandle() {
@@ -123,20 +140,28 @@ public class ListController implements Initializable {
             //Need to check if song && artist already exist
             @Override
             public void handle(javafx.event.ActionEvent event) {
-                currentSongSelected.setName(name_detail.getText());
-                currentSongSelected.setArtist(artist_detail.getText());
-                currentSongSelected.setAlbum(album_detail.getText());
-                currentSongSelected.setYear(Integer.parseInt(year_detail.getText()));
+                if (isSongExists(name_detail.getText(), artist_detail.getText())) {
+                    //Create dialog to show that song already exists
+                } else {
+                    currentSongSelected.setName(name_detail.getText());
+                    currentSongSelected.setArtist(artist_detail.getText());
+                    currentSongSelected.setAlbum(album_detail.getText());
+                    currentSongSelected.setYear(Integer.parseInt(year_detail.getText()));
 
-                songsObservableList.set(index, currentSongSelected.getName());
+                    songsObservableList.set(index, currentSongSelected.getName());
 
-                name_detail.setEditable(false);
-                artist_detail.setEditable(false);
-                album_detail.setEditable(false);
-                year_detail.setEditable(false);
+                    name_detail.setEditable(false);
+                    artist_detail.setEditable(false);
+                    album_detail.setEditable(false);
+                    year_detail.setEditable(false);
 
-                confirm_button.setDisable(true);
-                cancel_button.setDisable(true);
+                    confirm_button.setDisable(true);
+                    cancel_button.setDisable(true);
+
+                    sortSongsList();
+                    songs_listview.refresh();
+                }
+
             }
         });
         cancel_button.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
@@ -156,6 +181,11 @@ public class ListController implements Initializable {
                     year_detail.setText("");
                 }
 
+                name_detail.setEditable(false);
+                artist_detail.setEditable(false);
+                album_detail.setEditable(false);
+                year_detail.setEditable(false);
+
                 confirm_button.setDisable(true);
                 cancel_button.setDisable(true);
             }
@@ -163,10 +193,40 @@ public class ListController implements Initializable {
     }
 
     public void deleteSongHandle() {
+        String currentSongName = songs_listview.getSelectionModel().getSelectedItem().toString();
+        Song s = null;
+        int index = -1;
+        for (int i = 0; i < songsList.size(); i++) {
+            if (songsList.get(i).getName().equals(currentSongName)) {
+                songsList.remove(i);
+            }
+        }
+        songsObservableList.removeAll(songsList);
+        sortSongsList();
+        songs_listview.getItems().clear();
+        songs_listview.refresh();
+        for (int i = 0; i < songsList.size(); i++) {
+            songsObservableList.add(songsList.get(i).getName());
+        }
+        songs_listview.setItems(songsObservableList);
 
     }
 
-    public void sortSongs() {
+    public void sortSongsList() {
+        //Sort songsList alphabetically
+        String s = songsList.get(0).getName();
+        // s.compareTo()
+        for (int i = 1; i < songsList.size(); i++) {
+            for (int j = 1; j < songsList.size(); j++) {
+                if (songsList.get(i).getName().compareTo(songsList.get(j).getName()) < 0) {
+                    Song t = songsList.get(j);
+                    Song s1 = songsList.get(j);
+                    Song s2 = songsList.get(j);
+                    s1 = songsList.get(j - 1);
+                    s2 = t;
+                }
+            }
+        }
 
     }
 
@@ -197,6 +257,15 @@ public class ListController implements Initializable {
             }
         }
         return null;
+    }
+
+    private boolean isSongExists(String name, String artist) {
+        for (int i = 0; i < songsList.size(); i++) {
+            if (songsList.get(i).getName().equals(name) && songsList.get(i).getArtist().equals(artist)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void populateList() {
