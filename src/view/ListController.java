@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.ResourceBundle;
 
 /**
- * Created by yugantjoshi on 2/6/17.
+ * Created by Nimit Doshi and Yugant Joshi
  */
 public class ListController implements Initializable {
     @FXML
@@ -211,22 +211,22 @@ public class ListController implements Initializable {
         songs_listview.setItems(songsObservableList);
 
     }
-
+    
     public void sortSongsList() {
         //Sort songsList alphabetically
         String s = songsList.get(0).getName();
         // s.compareTo()
         for (int i = 1; i < songsList.size(); i++) {
-            for (int j = 1; j < songsList.size(); j++) {
-                if (songsList.get(i).getName().compareTo(songsList.get(j).getName()) < 0) {
-                    Song t = songsList.get(j);
-                    Song s1 = songsList.get(j);
-                    Song s2 = songsList.get(j);
-                    s1 = songsList.get(j - 1);
-                    s2 = t;
-                }
-            }
+            int j = i-1;
+            Song t = songList.get(i);
+            
+            while((t.getName().compareTo(songsList.get(j).getName()) < 0) && j>=0){
+                songList.set(j+1,songList.get(j));  //shifting
+                j--;   
+            }     
+            songList.set(j+1,t);        //correct position               
         }
+    }
 
     }
 
